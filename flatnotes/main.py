@@ -7,6 +7,9 @@ from fastapi.responses import HTMLResponse
 from fastapi.staticfiles import StaticFiles
 from qrcode import QRCode
 
+from fastapi.responses import FileResponse
+import os
+
 from auth import create_access_token, no_auth, validate_token
 from config import AuthType, config
 from error_responses import (
@@ -217,5 +220,10 @@ def get_config():
     """Retrieve server-side config required for the UI."""
     return ConfigModel.model_validate(config)
 
+# An endpoint to serve images for documentation
+@app.get("/assets/{filename}")
+def get_img(filename: str):
+    filepath = os.path.join('/assets/', os.path.basename(filename))
+    return FileResponse(filepath)
 
 app.mount("/", StaticFiles(directory="flatnotes/dist"), name="dist")
